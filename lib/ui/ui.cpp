@@ -10,36 +10,35 @@ namespace {
     const unsigned long kScreenTimeout = 5000;
     const int32_t kHeaderH = 20;
     const int32_t kFooterH = 20;
-
-    float accX = 0;
-    float accY = 0;
-    float accZ = 0;
-
 } // anonymous namespace
 
 StickUI::StickUI() : screenState(screenState::unknown) {}
 
 void StickUI::Begin() {
     M5.Lcd.fillScreen(kBackgroundColor);
-    M5.Lcd.setTextColor(TFT_BLACK);
-    M5.Lcd.setTextSize(2);
+    M5.Lcd.fillRect(0, 0, TFTW, kHeaderH, kHeaderColor);
+    M5.Lcd.fillRect(0, TFTH - kFooterH, TFTW, kFooterH, kFooterColor);
 
     turnOnDisplay();
 }
 
 void StickUI::Update() {
-    if (M5.BtnB.wasReleased()) {
-        if (screenState == screenState::off) {
-            turnOnDisplay();
-        } else {
-            turnOffDisplay();
-        }
+    if (screenState == screenState::off && M5.BtnB.wasReleased()) {
+        turnOnDisplay();
+    } else if (screenState == screenState::on && M5.BtnB.wasReleasefor(1024)) {
+        turnOffDisplay();
     }
 
     if (screenState == screenState::off) {
         return;
     }
 
+    unsigned long now = millis();
+    if (now - lastUpdate < 500) {
+        return;
+    }
+
+    lastUpdate = now;
     drawHeader();
     drawFooter();
 }
@@ -67,14 +66,16 @@ void StickUI::turnOnDisplay() {
 }
 
 void StickUI::drawHeader() {
-    M5.Lcd.fillRect(0, 0, TFTW, kHeaderH, kHeaderColor);
     M5.Lcd.setCursor(2, 2);
+    M5.Lcd.setTextColor(TFT_BLACK);
+    M5.Lcd.setTextSize(2);
     M5.Lcd.printf("%.1fv", M5.Axp.GetBatVoltage());
 }
 
 void StickUI::drawFooter() {
-    M5.Lcd.fillRect(0, TFTH - kFooterH, TFTW, kFooterH, kFooterColor);
     M5.Lcd.setCursor(2, TFTH - kFooterH + 2);
+    M5.Lcd.setTextColor(TFT_BLACK);
+    M5.Lcd.setTextSize(2);
     M5.Lcd.println(WiFi.localIP());
 }
 

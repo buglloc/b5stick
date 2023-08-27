@@ -29,6 +29,7 @@ class StickUI {
 
     private:
         screenState screenState;
+        unsigned long lastUpdate;
 };
 
 extern StickUI UI;
