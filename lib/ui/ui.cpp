@@ -16,8 +16,6 @@ StickUI::StickUI() : screenState(screenState::unknown) {}
 
 void StickUI::Begin() {
     M5.Lcd.fillScreen(kBackgroundColor);
-    M5.Lcd.fillRect(0, 0, TFTW, kHeaderH, kHeaderColor);
-    M5.Lcd.fillRect(0, TFTH - kFooterH, TFTW, kFooterH, kFooterColor);
 
     turnOnDisplay();
 }
@@ -66,16 +64,18 @@ void StickUI::turnOnDisplay() {
 }
 
 void StickUI::drawHeader() {
-    M5.Lcd.setCursor(2, 2);
+    M5.Lcd.fillRect(0, 0, TFTW, kHeaderH, kHeaderColor);
     M5.Lcd.setTextColor(TFT_BLACK);
     M5.Lcd.setTextSize(2);
+    M5.Lcd.setCursor(2, 2);
     M5.Lcd.printf("%.1fv", M5.Axp.GetBatVoltage());
 }
 
 void StickUI::drawFooter() {
-    M5.Lcd.setCursor(2, TFTH - kFooterH + 2);
+    M5.Lcd.fillRect(0, TFTH - kFooterH, TFTW, kFooterH, kFooterColor);
     M5.Lcd.setTextColor(TFT_BLACK);
     M5.Lcd.setTextSize(2);
+    M5.Lcd.setCursor(2, TFTH - kFooterH + 2);
     M5.Lcd.println(WiFi.localIP());
 }
 
